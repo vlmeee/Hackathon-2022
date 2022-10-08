@@ -224,6 +224,79 @@ def parse_banki_ru_detail(url):
     return text
 
 
+
+def parse_rbc():
+    news_list = []
+    url_list = ['https://www.rbc.ru/national',
+                'https://www.rbc.ru/neweconomy/?utm_source=topline',
+                'https://www.rbc.ru/economics/?utm_source=topline',
+                'https://www.rbc.ru/business/?utm_source=topline',
+                'https://www.rbc.ru/finances/?utm_source=topline']
+
+    def parse_rbc_section(url):
+        news_list_internal = []
+        page = requests.get(url)
+
+        soup = BeautifulSoup(page.content, 'html.parser')
+        news_container = soup.find_all("a", class_="item__link")
+
+        for item in news_container:
+            news_detail_dict = {}
+
+            if item is None:
+                continue
+
+            if item.span.span.string is not None:
+                news_title = item.span.span.string.strip()
+
+            news_link = item.get("href")
+            news_text = parse_rbc_detail(news_link)
+
+            if news_title is not None:
+                news_detail_dict['news_title'] = str(news_title)
+
+            if news_text is not None:
+                news_detail_dict['news_text'] = str(news_text)
+
+            if len(news_detail_dict) != 0:
+                news_list_internal.append(news_detail_dict)
+
+        return news_list_internal
+
+    for url in url_list:
+        parse_rbc_section_result = parse_rbc_section(url)
+
+        for item in parse_rbc_section_result:
+            if item is not None:
+                news_list.append(item)
+
+    return news_list
+
+def parse_rbc_detail(url):
+    text = ''
+
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    text_list = soup.find_all("div", class_='article__text article__text_free')
+
+    for item in text_list:
+        p_list = item.find_all('p')
+
+        if p_list is None:
+            continue
+
+        for internal_p_list in p_list:
+            if internal_p_list is None:
+                continue
+
+            for p in internal_p_list:
+                if p is None:
+                    continue
+
+                text = text + str(p.string).strip()
+
+    return text
+
 if __name__ == '__main__':
     # print(*(i['news_title'] for i in parse_tinkoff_journal()), sep='\n')
     pass
