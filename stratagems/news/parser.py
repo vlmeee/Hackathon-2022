@@ -76,4 +76,20 @@ def parse_text_from_article_vcru(article_url):
     return full_article_text
 
 
+def parse_text_from_article_tinkoff_journal(article_url):
+    full_article_text = ''
 
+    page = requests.get(article_url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    article_container = soup.find('div', class_='article-body')
+
+    for paragraph in article_container.find_all('p', class_='paragraph'):
+        full_article_text += ' '.join(paragraph.stripped_strings) + '\n'
+
+    return full_article_text
+
+
+if __name__ == '__main__':
+
+    url = 'https://journal.tinkoff.ru/news/bad-guy-plan/'
+    print(parse_text_from_article_tinkoff_journal(url))
