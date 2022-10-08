@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 
@@ -21,14 +22,10 @@ def parse_news():
 
             news_detail_dict = {}
             news_title = item.find("div", class_="content-title content-title--short l-island-a")
-            news_snippet = item.find("p")
             news_title = news_title.string
 
             if not news_title is None:
                 news_detail_dict["news_title"] = news_title.strip()
-            if not news_snippet is None:
-                news_snippet = news_snippet.get_text()
-                news_detail_dict["news_snippet"] = news_snippet
             if news_text_link is not None:
                 news_text_link = news_text_link.get("href")
                 if news_text_link is not None:
@@ -46,13 +43,13 @@ def parse_tinkoff_journal():
 
     category_pages_amount = {
         'Инвестиции': {
-            'pages_amount': 100,
+            'pages_amount': 8,
             'url': 'https://journal.tinkoff.ru/flows/invest/page/'
         },
-        'Бизнес': {
-            'pages_amount': 42,
-            'url': 'https://journal.tinkoff.ru/flows/business-all/page/'
-        },
+        # 'Бизнес': {
+        #     'pages_amount': 42,
+        #     'url': 'https://journal.tinkoff.ru/flows/business-all/page/'
+        # },
     }
 
     for category in category_pages_amount:
@@ -78,6 +75,7 @@ def parse_tinkoff_journal():
                             'https://journal.tinkoff.ru' + news_text_link)
                 if len(news_detail_dict) != 0:
                     news_list.append(news_detail_dict)
+
     return news_list
 
 
@@ -119,12 +117,6 @@ def parse_1c():
                 )
                 if tmp_title is not None:
                     news_detail_dict['news_title'] = tmp_title.text.strip()
-
-                tmp_snippet = page_link_url.find(
-                    'p'
-                )
-                if tmp_snippet is not None:
-                    news_detail_dict['news_snippet'] = tmp_snippet.text.strip()
 
                 for tag, class_ in tags_to_delete_from_text:
                     for item in page_text.find_all(tag, class_=class_):
@@ -299,4 +291,7 @@ def parse_rbc_detail(url):
 
 if __name__ == '__main__':
     # print(*(i['news_title'] for i in parse_tinkoff_journal()), sep='\n')
-    pass
+    with open("dataset.json", "w") as f:
+        json.dump({"dataset": parse_tinkoff_journal()}, f)
+        # data = json.load(f)
+        # print(data['dataset'][0]['news_text'])
