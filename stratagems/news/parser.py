@@ -146,6 +146,65 @@ def parse_text_from_article_tinkoff_journal(article_url):
 
     return full_article_text
 
+# для новостей 3-х летней давности рекомендуется pages_num = 1000
+def parse_banki_ru(full_parse = False, url = "https://www.banki.ru/news/lenta/", pages_num = 5):
+    news_list = []
+    main_url = 'https://www.banki.ru'
+    # url = "https://www.banki.ru/news/lenta/"
+    page = requests.get(url)
+
+    soup = BeautifulSoup(page.content, 'html.parser')
+    news_container = soup.find_all("a", class_="lf473447f")
+
+    for item in news_container:
+        news_detail_dict = {}
+        # print(item)
+        if item is None:
+            continue
+        news_title = item.string
+        news_link = main_url + item.get("href")
+        # print(news_link)
+        news_text = parse_banki_ru_detail(news_link)
+        news_detail_dict['news_title'] = news_title
+        news_detail_dict['news_text'] = news_text
+
+        if len(news_detail_dict) != 0:
+            news_list.append(news_detail_dict)
+
+    if full_parse == True:
+        page_no = 2
+        while page_no < pages_num:
+            print(page_no)
+            url = 'https://www.banki.ru/news/lenta/?page=' + str(page_no)
+            news_list_additional = parse_banki_ru(False, url)
+            for item in news_list_additional:
+                news_list.append(item)
+            page_no = page_no + 1
+    # print(len(news_list))
+
+    return news_list
+
+
+def parse_banki_ru_detail(url):
+    text = ''
+
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    text_list = soup.find_all("div", class_='l6d291019')
+    for item in text_list:
+        p_list = item.find_all('p')
+        if p_list is None:
+            continue
+        for internal_p_list in p_list:
+            if internal_p_list is None:
+                continue
+            for p in internal_p_list:
+                if p is None:
+                    continue
+                # print(p)
+                text = text + str(p.string).strip()
+    # print(text)
+    return text
 
 if __name__ == '__main__':
     # parse_1c()
