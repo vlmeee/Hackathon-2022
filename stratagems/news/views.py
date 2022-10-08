@@ -5,13 +5,17 @@ from .serializers import NewsSerializer, RoleSerializer
 from .parser import parse_news, parse_banki_ru, parse_rbc, parse_all
 import time
 from .process_news import process_news_and_insert
+import random
 
 
 # Create your views here.
 class NewsListAPIView(mixins.ListModelMixin,
                       generics.GenericAPIView):
     # temp source
-    queryset = News.objects.all()[0:3]
+    news_cnt = News.objects.count()
+    start_num =  random.sample(range(1, news_cnt))
+    end_num =  start_num + 3
+    queryset = News.objects.all()[start_num:end_num]
     serializer_class = NewsSerializer
 
     def get(self, request, *args, **kwargs):
