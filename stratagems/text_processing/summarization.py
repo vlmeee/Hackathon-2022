@@ -8,14 +8,14 @@ def extract_data(table, tags: list, attribute: str = 'text'):
     return data
 
 
-def filter(text: str) -> str:
+def filter(text: str) -> list:
     punct = string.punctuation
-    prep = ['без', 'безо', 'близ', 'в', 'во', 'вместо', 'вне', 'для', 'до', 'за' \
-        , 'из', 'изо', 'из-за', 'из-под', 'к', 'ко', 'кроме', 'между', \
+    prep = ['без', 'безо', 'близ', 'в', 'во', 'вместо', 'вне', 'для', 'до', 'за'\
+            , 'из', 'изо', 'из-за', 'из-под', 'к', 'ко', 'кроме', 'между', \
             'меж', 'на', 'над', 'о', 'об', 'обо', 'от', 'ото', 'перед', \
-            'передо', 'пред', 'пред', 'пo', 'под', 'подо', 'при', 'про', \
+            'передо', 'пред', 'пред', 'пo', 'под', 'подо', 'при', 'про',\
             'ради', 'с', 'со', 'сквозь', 'среди', 'у', 'через', 'чрез', \
-            'как', 'и']
+            'как', 'и', 'a', 'это',]
     alphabet = ''.join([chr(i) for i in range(1072, 1072 + 32)])
     sentences = []
     for sentence in text.split('.'):
@@ -47,7 +47,7 @@ def general_words(sentences: list) -> list:
     return list(gwords)
 
 
-def clossest(filetered_text: list) -> str:
+def clossest(filetered_text: list) -> list:
     gwords = general_words(filetered_text)
     out = []
     for i in range(len(filetered_text)):
@@ -60,7 +60,7 @@ def clossest(filetered_text: list) -> str:
     return out
 
 
-def summarization(text: list, weights: dict, best_of: int = 3):
+def summarization(text: str, weights: list, best_of: int = 3):
     out = []
     sentences = text.split('.')
     for i in range(best_of):
