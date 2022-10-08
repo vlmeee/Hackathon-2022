@@ -38,18 +38,26 @@ def parse_news():
     return news_list
 
 
-def parse_tinkoff_journal():
+def parse_tinkoff_journal(full = False):
+
+    if full == True:
+        pages_amount_1 = 8
+        pages_amount_2 = 42
+    else:
+        pages_amount_1 = 2
+        pages_amount_2 = 2
+
     news_list = []
 
     category_pages_amount = {
         'Инвестиции': {
-            'pages_amount': 8,
+            'pages_amount': pages_amount_1,
             'url': 'https://journal.tinkoff.ru/flows/invest/page/'
         },
-        # 'Бизнес': {
-        #     'pages_amount': 42,
-        #     'url': 'https://journal.tinkoff.ru/flows/business-all/page/'
-        # },
+        'Бизнес': {
+            'pages_amount': pages_amount_2,
+            'url': 'https://journal.tinkoff.ru/flows/business-all/page/'
+        },
     }
 
     for category in category_pages_amount:
@@ -79,9 +87,14 @@ def parse_tinkoff_journal():
     return news_list
 
 
-def parse_1c():
+def parse_1c(full = False):
     ''' Парсит данные с сайта 1с. Парсит 60 страниц. Это примерно 15 октября 2020 года  '''
     news_list = []
+    if full == True:
+        page_num = 61
+    else:
+        page_num = 2
+
     tags_to_delete_from_text = (
         ('div', 'social_links social_links__top'),
         ('h1', ''),
@@ -90,7 +103,7 @@ def parse_1c():
         ('table', ''),
         ('div', 'panel featured')
     )
-    for page_number in range(1, 61):
+    for page_number in range(1, page_num):
         url = f'https://1c.ru/news/newslist.jsp?partniininndnnHnsnnbnnrnnfjiCnfV350nunnsnncnnfjiCnfV350nunnnnnninnnm1n1Dinfnf={page_number}'
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -288,6 +301,24 @@ def parse_rbc_detail(url):
                 text = text + str(p.string).strip()
 
     return text
+
+
+def parse_all(full = False):
+    news_list = []
+
+    parse_news_res = parse_news()
+    parse_tinkoff_journal_res = parse_tinkoff_journal(full)
+    parse_1c_res = parse_1c(full)
+    parse_banki_ru_detail = parse_banki_ru(full)
+    parse_rbc_res = parse_rbc()
+
+    news_list.extend(parse_news_res)
+    news_list.extend(parse_tinkoff_journal_res)
+    news_list.extend(parse_1c_res)
+    news_list.extend(parse_banki_ru_detail)
+    news_list.extend(parse_rbc_res)
+
+    return news_list
 
 if __name__ == '__main__':
     # print(*(i['news_title'] for i in parse_tinkoff_journal()), sep='\n')
