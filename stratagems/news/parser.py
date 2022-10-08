@@ -45,6 +45,9 @@ def parse_tinkoff_journal():
     news_list = []
 
     url = "https://journal.tinkoff.ru/"
+
+    # https://journal.tinkoff.ru/tag/breaking-news/
+
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     news_container = soup.find_all("div", class_="inner--BbvB6")
@@ -59,6 +62,61 @@ def parse_tinkoff_journal():
                 news_detail_dict["news_title"] = news_title.strip()
         if len(news_detail_dict) != 0:
             news_list.append(news_detail_dict)
+    return news_list
+
+
+def parse_1c():
+    ''' Парсит данные с сайта 1с. Парсит 60 страниц. Это примерно 15 октября 2020 года  '''
+    news_list = []
+    tags_to_delete_from_text = (
+        ('div', 'social_links social_links__top'),
+        ('h1', ''),
+        ('ul', 'pager'),
+        ('div', 'infonews_footer'),
+        ('table', ''),
+        ('div', 'panel featured')
+    )
+    for page_number in range(1, 61):
+        url = f'https://1c.ru/news/newslist.jsp?partniininndnnHnsnnbnnrnnfjiCnfV350nunnsnncnnfjiCnfV350nunnnnnninnnm1n1Dinfnf={page_number}'
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        news_container = soup.find('ul', class_='news-list')
+        for item in news_container.find_all('li'):
+            for link in item.find_all('a'):
+                news_detail_dict = {}
+                if not link.get('href').startswith('http'):
+                    link_url = 'https://1c.ru' + link.get('href')
+                else:
+                    link_url = link.get('href')
+                if link_url is None:
+                    continue
+                page_link_url = BeautifulSoup(
+                    requests.get(link_url).content,
+                    'html.parser')
+                page_text = page_link_url.find('div', class_='redhead')
+
+                if page_text is None:
+                    continue
+
+                tmp_title = page_link_url.find(
+                    'div', class_='panel featured'
+                )
+                if tmp_title is not None:
+                    news_detail_dict['news_title'] = tmp_title.text.strip()
+
+                tmp_snippet = page_link_url.find(
+                    'p'
+                )
+                if tmp_snippet is not None:
+                    news_detail_dict['news_snippet'] = tmp_snippet.text.strip()
+
+                for tag, class_ in tags_to_delete_from_text:
+                    for item in page_text.find_all(tag, class_=class_):
+                        item.extract()
+                news_detail_dict['news_text'] = page_text.text.strip()
+                if news_detail_dict:
+                    news_list.append(news_detail_dict)
+
     return news_list
 
 
@@ -90,6 +148,5 @@ def parse_text_from_article_tinkoff_journal(article_url):
 
 
 if __name__ == '__main__':
-
-    url = 'https://journal.tinkoff.ru/news/bad-guy-plan/'
-    print(parse_text_from_article_tinkoff_journal(url))
+    # parse_1c()
+    pass
