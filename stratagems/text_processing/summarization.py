@@ -1,5 +1,6 @@
 import string
 
+
 def extract_data(table, tags: list, attribute: str = 'text'):
     data = []
     for tag in tags:
