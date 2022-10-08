@@ -4,7 +4,7 @@ from .models import News, Role
 from .serializers import NewsSerializer, RoleSerializer
 from .parser import parse_news, parse_banki_ru, parse_rbc, parse_all
 import time
-from .process_news import process_news_and_insert
+from .process_news import process_news_and_insert, determine_role
 import random
 
 
@@ -34,6 +34,7 @@ class NewsListAPIView(mixins.ListModelMixin,
         # print(parse_all_res)
         # news_count = len(parse_all_res)
         # print('News count: ', news_count)
+        # print(determine_role(', еще 60,8 млрд руб.  Вице-премьер уточнил, что жилые корпуса и общежития рассчитаны на размещение 2300 студентов, а учебные корпуса и лаборатории для научных исследований отвечают новому уровню образования. , еще 60,8 млрд руб'))
         t1 = time.time() - t0
         print("Time elapsed, s: ", t1)
         # print('News per time, s: ', t1/news_count)
@@ -59,6 +60,17 @@ class GetNewsByRoleAPIView(generics.ListAPIView):
     serializer_class = NewsSerializer
 
     def get_queryset(self):
-
         role = self.kwargs['role']
-        return News.objects.filter(role=role)
+
+        news_cnt = News.objects.count()
+        start_num = random.sample(range(1, news_cnt), 1)[0]
+        end_num = start_num + 3
+
+        news_by_role = News.objects.filter(role=role)
+
+        if len(news_by_role) < 3:
+            self.queryset = News.objects.all()[start_num:end_num]
+        else:
+            self.queryset = news_by_role
+
+        return self.queryset

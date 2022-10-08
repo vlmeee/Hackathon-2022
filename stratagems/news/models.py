@@ -6,7 +6,7 @@ class News(models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    # role = models.CharField(max_length=255)
+    role = models.CharField(max_length=255, null=True)
 
     class Meta:
         verbose_name_plural = 'news'
