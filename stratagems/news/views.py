@@ -13,8 +13,8 @@ class NewsListAPIView(mixins.ListModelMixin,
                       generics.GenericAPIView):
     # temp source
     news_cnt = News.objects.count()
-    start_num =  random.sample(range(1, news_cnt))
-    end_num =  start_num + 3
+    start_num = random.sample(range(1, news_cnt), 1)[0]
+    end_num = start_num + 3
     queryset = News.objects.all()[start_num:end_num]
     serializer_class = NewsSerializer
 
