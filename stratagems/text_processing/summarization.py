@@ -64,7 +64,9 @@ def summarization(text: str, weights: list, best_of: int = 3):
     out = []
     sentences = text.split('.')
     for i in range(best_of):
-        index = weights.index(max(weights))
+        if weights is None or len(weights) == 0:
+            return out
+        index = weights.index(max(weights, default=0))
         out.append(sentences[index + i])
         weights.pop(index)
     return out
