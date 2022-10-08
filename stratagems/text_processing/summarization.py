@@ -47,8 +47,7 @@ def general_words(sentences: list) -> list:
     return list(gwords)
 
 
-def clossest(text: str) -> str:
-    filetered_text = filter(text)
+def clossest(filetered_text: list) -> str:
     gwords = general_words(filetered_text)
     out = []
     for i in range(len(filetered_text)):
@@ -87,5 +86,7 @@ if __name__ == '__main__':
     В ЦБ ранее прогнозировали, что объем корпоративных кредитов в текущем году вырастет на 15 процентов,
     потребительских - на 20-30 процентов. При этом в регуляторе обеспокоены ростом потребкредитования в России,
     указывая, что увеличение задолженности по таким ссудам может стать угрозой для финансовой устойчивости страны."""
-    weigths = clossest(text)
-    summarization(text, weigths)
+    filtered_text = filter(text)
+    weigths = clossest(filtered_text)
+    print(summarization(text, weigths))
+
