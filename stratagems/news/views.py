@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, mixins
 from .models import News, Role
 from .serializers import NewsSerializer, RoleSerializer
-from .parser import parse_news
+from .parser import parse_news, parse_tinkoff_journal
 
 
 # Create your views here.
@@ -14,10 +14,13 @@ class NewsListAPIView(mixins.ListModelMixin,
 
     def get(self, request, *args, **kwargs):
         # Maybe magic will happen here?
-        parsing_result = parse_news()
-        for result in parsing_result:
+
+        # parsing_result = parse_news()
+        # for result in parsing_result:
+        #     print(result)
+        parsing_tinkoff_journal_result = parse_tinkoff_journal()
+        for result in parsing_tinkoff_journal_result:
             print(result)
-        # print(parsing_result.prettify())
         return self.list(request, *args, **kwargs)
 
 
