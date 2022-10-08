@@ -11,7 +11,7 @@ from .process_news import process_news_and_insert
 class NewsListAPIView(mixins.ListModelMixin,
                       generics.GenericAPIView):
     # temp source
-    queryset = News.objects.all()
+    queryset = News.objects.all()[0:3]
     serializer_class = NewsSerializer
 
     def get(self, request, *args, **kwargs):
@@ -45,3 +45,12 @@ class RoleListAPIView(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+class GetNewsByRoleAPIView(generics.ListAPIView):
+    serializer_class = NewsSerializer
+
+    def get_queryset(self):
+
+        role = self.kwargs['role']
+        return News.objects.filter(role=role)
