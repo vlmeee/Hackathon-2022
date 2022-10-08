@@ -2,6 +2,7 @@ import numpy as np
 from numpy.linalg import norm
 from navec import Navec
 
+
 def text2emb(text:str, navec:Navec)->np.array:
     """
     convert sentence to sequence of embbedings
