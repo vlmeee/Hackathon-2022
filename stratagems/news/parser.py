@@ -44,24 +44,40 @@ def parse_news():
 def parse_tinkoff_journal():
     news_list = []
 
-    url = "https://journal.tinkoff.ru/"
+    category_pages_amount = {
+        'Инвестиции': {
+            'pages_amount': 100,
+            'url': 'https://journal.tinkoff.ru/flows/invest/page/'
+        },
+        'Бизнес': {
+            'pages_amount': 42,
+            'url': 'https://journal.tinkoff.ru/flows/business-all/page/'
+        },
+    }
 
-    # https://journal.tinkoff.ru/tag/breaking-news/
+    for category in category_pages_amount:
+        for page_number in range(1, category_pages_amount[category]['pages_amount'] + 1):
+            url = category_pages_amount[category]['url'] + str(page_number)
+            page = requests.get(url)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            news_container = soup.find_all("div", class_="item--HDDKc")
 
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    news_container = soup.find_all("div", class_="inner--BbvB6")
+            for item in news_container:
+                news_detail_dict = {}
+                news_title = item.find("h3", class_="title--gosKP")
 
-    for item in news_container:
-        news_detail_dict = {}
-        news_title = item.find("h3", class_="title--hhlgn")
-
-        if not news_title is None:
-            news_title = news_title.string
-            if len(news_title) > 0:
-                news_detail_dict["news_title"] = news_title.strip()
-        if len(news_detail_dict) != 0:
-            news_list.append(news_detail_dict)
+                if not news_title is None:
+                    news_title = news_title.string
+                    if len(news_title) > 0:
+                        news_detail_dict["news_title"] = news_title.strip()
+                news_text_link = item.find('a', class_='link--xmoGM')
+                if news_text_link is not None:
+                    news_text_link = news_text_link.get('href')
+                    if news_text_link is not None:
+                        news_detail_dict['news_text'] = parse_text_from_article_tinkoff_journal(
+                            'https://journal.tinkoff.ru' + news_text_link)
+                if len(news_detail_dict) != 0:
+                    news_list.append(news_detail_dict)
     return news_list
 
 
@@ -146,6 +162,7 @@ def parse_text_from_article_tinkoff_journal(article_url):
 
     return full_article_text
 
+
 # для новостей 3-х летней давности рекомендуется pages_num = 1000
 def parse_banki_ru(full_parse = False, url = "https://www.banki.ru/news/lenta/", pages_num = 5):
     news_list = []
@@ -206,6 +223,7 @@ def parse_banki_ru_detail(url):
     # print(text)
     return text
 
+
 if __name__ == '__main__':
-    # parse_1c()
+    # print(*(i['news_title'] for i in parse_tinkoff_journal()), sep='\n')
     pass
