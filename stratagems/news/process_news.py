@@ -1,6 +1,7 @@
 from .parser import parse_all
 from text_processing.summarization import summarization, filter, clossest
 from .models import News
+from celery import shared_task
 
 
 def news_summariziation(news_text):
@@ -18,7 +19,8 @@ def insert_to_news(title, text):
     return None
 
 
-def process_news_and_insert(full = False):
+@shared_task(bind=True)
+def process_news_and_insert(self, full = False):
 
     # list of dict (keys: news_title and news_text)
     news_list = parse_all(full)

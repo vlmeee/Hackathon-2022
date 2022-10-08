@@ -2,10 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
-from celery import shared_task
 
-
-@shared_task(bind=True)
 def test(self):
     print("сработало")
 

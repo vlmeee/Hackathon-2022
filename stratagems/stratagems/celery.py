@@ -13,7 +13,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
     'parse_data_every_2_hours': {
-        'task': 'news.parser.test',
-        'schedule': crontab(minute='*/1'),
+        'task': 'news.process_news.process_news_and_insert',
+        'schedule': crontab(hour='*/2'),
     }
 }
