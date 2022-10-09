@@ -37,6 +37,6 @@ bot = telebot.TeleBot(<Ваш токен>)
 ```
 python3 telegram_bot/telegram_bot.py 
 ```
-## Точки вход API
+## Точки входа API
 http://127.0.0.1:8000/news/director/<br/>
 http://127.0.0.1:8000/news/buh/
