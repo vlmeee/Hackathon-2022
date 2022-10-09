@@ -11,8 +11,6 @@ import random
 # Create your views here.
 class NewsListAPIView(mixins.ListModelMixin,
                       generics.GenericAPIView):
-    # temp source
-
     serializer_class = NewsSerializer
 
     def get_queryset(self):
@@ -23,23 +21,6 @@ class NewsListAPIView(mixins.ListModelMixin,
         return self.queryset
 
     def get(self, request, *args, **kwargs):
-        # Maybe magic will happen here?
-
-        # parsing_result = parse_news()
-        # banki_ru = parse_banki_ru(True)
-        # rbc = parse_rbc()
-        t0 = time.time()
-        # parse_all_res = parse_all()
-        # process_news_and_insert()
-        # print(parse_all_res)
-        # news_count = len(parse_all_res)
-        # print('News count: ', news_count)
-        # print(determine_role(', еще 60,8 млрд руб.  Вице-премьер уточнил, что жилые корпуса и общежития рассчитаны на размещение 2300 студентов, а учебные корпуса и лаборатории для научных исследований отвечают новому уровню образования. , еще 60,8 млрд руб'))
-        t1 = time.time() - t0
-        print("Time elapsed, s: ", t1)
-        # print('News per time, s: ', t1/news_count)
-
-
         return self.list(request, *args, **kwargs)
 
 
